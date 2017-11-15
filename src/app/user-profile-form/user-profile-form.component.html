@@ -1,0 +1,99 @@
+<form class="ui form" novalidate [formGroup]="user" (ngSubmit)="submit()">
+
+    <h4 class="ui dividing header">User profile:</h4>
+
+    <div class="field">
+        <label>Name</label>
+        <div class="two fields">
+            <div class="field"
+                 [ngClass]="{'error': (user.get('firstName').hasError('required') && user.get('firstName').touched) ||
+                                       user.get('firstName').hasError('maxlength') && user.get('firstName').dirty}">
+                <input type="text" name="firstName" formControlName="firstName" placeholder="First Name">
+                <div class="error">
+                    <p *ngIf="user.get('firstName').hasError('required') && user.get('firstName').touched">First name is required</p>
+                    <p *ngIf="user.get('firstName').hasError('maxlength') && user.get('firstName').dirty">Name cannot be more than 10 characters</p>
+                </div>
+            </div>
+
+            <div class="field"
+                 [ngClass]="{'error': (user.get('lastName').hasError('required') && user.get('lastName').touched) ||
+                                       user.get('lastName').hasError('maxlength') && user.get('lastName').dirty}">
+                <input type="text" name="lastName" formControlName="lastName" placeholder="Last Name">
+                <div class="error">
+                    <p *ngIf="user.get('lastName').hasError('required') && user.get('lastName').touched">Last name is required</p>
+                    <p *ngIf="user.get('lastName').hasError('maxlength') && user.get('lastName').dirty">Name cannot be more than 10 characters</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="field">
+        <label>Email</label>
+        <div class="two fields">
+            <div class="field" [ngClass]="{'error': user.get('email').hasError('required') && user.get('email').touched}">
+                <input type="email" name="email" formControlName="email" placeholder="Enter your email">
+                <div class="error">
+                    <p *ngIf="user.get('email').hasError('required') && user.get('email').touched">Email is required</p>
+                    <p *ngIf="user.get('email').hasError('pattern') && user.get('email').dirty">Should be a valid email address </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="inline fields">
+        <label>Gender:</label>
+        <div class="field">
+            <div class="ui radio checkbox">
+                <input type="radio" name="gender" value="male" formControlName="gender">
+                <label>Male</label>
+            </div>
+        </div>
+        <div class="field">
+            <div class="ui radio checkbox">
+                <input type="radio" name="gender" value="female" formControlName="gender">
+                <label>Female</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="field" formGroupName="birthday">
+        <label>Birthday</label>
+        <div class="three fields">
+
+            <div class="field"
+                 [ngClass]="{'error': (user.get('birthday').get('day').hasError('required') && user.get('birthday').get('day').touched) ||
+                                      (user.get('birthday').get('day').hasError('invalidRange') && user.get('birthday').get('day').dirty)}">
+                <input type="number" formControlName="day" placeholder="{{currentDay}}">
+                <div class="error">
+                    <p *ngIf="user.get('birthday').get('day').hasError('required') && user.get('birthday').get('day').touched">Day is required</p>
+                    <p *ngIf="!user.get('birthday').get('day').hasError('required') && user.get('birthday').get('day').hasError('invalidRange') && user.get('birthday').get('day').dirty">Should be a value from 1 to 31</p>
+                </div>
+            </div>
+
+            <div class="field"
+                 [ngClass]="{'error': (user.get('birthday').get('month').hasError('required') && user.get('birthday').get('month').touched) ||
+                                      (user.get('birthday').get('month').hasError('invalidRange') && user.get('birthday').get('month').dirty)}">
+                <input type="number" formControlName="month" placeholder="{{currentMonth}}">
+                <div class="error">
+                    <p *ngIf="user.get('birthday').get('month').hasError('required') && user.get('birthday').get('month').touched">Day is required</p>
+                    <p *ngIf="!user.get('birthday').get('month').hasError('required') && user.get('birthday').get('month').hasError('invalidRange') && user.get('birthday').get('month').dirty">Should be a value from 1 to 12</p>
+                </div>
+            </div>
+
+            <div class="field"
+                 [ngClass]="{'error': (user.get('birthday').get('year').hasError('required') && user.get('birthday').get('year').touched) ||
+                                      (user.get('birthday').get('year').hasError('invalidRange') && user.get('birthday').get('year').dirty)}">
+                <input type="number" formControlName="year" placeholder="{{currentYear}}">
+                <div class="error">
+                    <p *ngIf="user.get('birthday').get('year').hasError('required') && user.get('birthday').get('year').touched">Day is required</p>
+                    <p *ngIf="!user.get('birthday').get('year').hasError('required') && user.get('birthday').get('year').hasError('invalidRange') && user.get('birthday').get('year').dirty">Should be a value from 1900 to {{currentYear}}</p>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+    <button class="ui submit button" type="submit" [disabled]="user.invalid">Submit</button>
+    <button class="ui submit button" type="reset">Reset</button>
+</form>
