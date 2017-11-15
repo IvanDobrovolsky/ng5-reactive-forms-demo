@@ -1,6 +1,7 @@
 [
-  { "name": "Ivan", "email": "ivan@example.com" },
-  { "name": "Josh", "email": "josh@example.com" },
-  { "name": "Anton", "email": "anton@example.com" },
-  { "name": "Davis", "email": "davis@example.com" }
+  { "firstName": "Ivan", "email": "ivan@example.com" },
+  { "firstName": "Artem", "email": "artem@example.com" },
+  { "firstName": "Galina", "email": "galina@example.com" },
+  { "firstName": "Anton", "email": "anton@example.com" },
+  { "firstName": "Davis", "email": "davis@example.com" }
 ]

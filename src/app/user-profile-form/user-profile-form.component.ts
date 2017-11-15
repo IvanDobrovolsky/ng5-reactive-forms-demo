@@ -1,18 +1,17 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-
-// Operators
+import { Subscription } from 'rxjs/Subscription';
+import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/filter';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/switchMap';
 import 'rxjs/add/observable/of';
-
-import { Subscription } from 'rxjs/Subscription';
+import 'rxjs/add/operator/do';
 
 import { Gender, User } from '../models/user.model';
 import { UserProfileFormValidator } from './user-profile-form.validator';
-import { Observable } from 'rxjs/Observable';
+import { ApiService } from '../api.service';
 
 /**
  Validators:
@@ -61,9 +60,12 @@ export class UserProfileFormComponent implements OnInit, OnDestroy {
   public readonly currentDay = new Date().getDate();
   public readonly currentMonth = new Date().getMonth() + 1;
   public readonly currentYear = new Date().getFullYear();
+  public suggestedUsers$: Observable<any>;
   private formSubscription: Subscription;
 
-  constructor (private fb: FormBuilder, private customValidator: UserProfileFormValidator) {
+  constructor (private apiService: ApiService,
+               private fb: FormBuilder,
+               private customValidator: UserProfileFormValidator) {
   }
 
   public ngOnInit(): void {
@@ -84,22 +86,13 @@ export class UserProfileFormComponent implements OnInit, OnDestroy {
       })
     });
 
-    const toLowerCase = (char: string): string => char.toLowerCase();
-    const isTextCharacter = (char: string): boolean => /^[a-zA-Z\s]+$/.test(char) && !!char;
-    const toApiEndpoint = (char: string): string => `http://apiurl/${char}`;
-    const makeFakeHttpRequest = (url: string): Observable<string> =>
-      Observable.of(JSON.stringify({status: 200, message: 'Success!', data: { user: true }}, null, 3));
+    const firstNameField = this.user.get('firstName');
 
-    // Simple example of how reactivity works
-    this.formSubscription = this.user.get('firstName').valueChanges
+    this.suggestedUsers$ = firstNameField.valueChanges
       .debounceTime(500)
-      .filter(isTextCharacter)
-      .map(toLowerCase)
-      .map(toApiEndpoint)
-      .switchMap(makeFakeHttpRequest)
-      .subscribe(value => {
-        console.log(`Retrieved from fake server : ${value}`);
-      });
+      .do((v) => console.log(v))
+      .switchMap(this.apiService.getUsers.bind(this.apiService))
+      .map((users: Array<any>) => this.filterUsersData(users, firstNameField.value))
   }
 
   public ngOnDestroy(): void {
@@ -112,5 +105,11 @@ export class UserProfileFormComponent implements OnInit, OnDestroy {
 
       console.log(userFormData, 'Submitted!');
     }
+  }
+
+  private filterUsersData(users: Array<any>, value: string) {
+    return users
+      .filter(user => user.firstName.toLowerCase().includes(value.toLowerCase()))
+      .map(user => user.firstName);
   }
 }

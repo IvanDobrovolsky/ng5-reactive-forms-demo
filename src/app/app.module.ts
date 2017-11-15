@@ -6,6 +6,7 @@ import { HttpModule } from '@angular/http';
 import { AppComponent } from './app.component';
 import { UserProfileFormComponent } from './user-profile-form/user-profile-form.component';
 import { UserProfileFormValidator } from './user-profile-form/user-profile-form.validator';
+import { ApiService } from './api.service';
 
 @NgModule({
   declarations: [
@@ -18,6 +19,7 @@ import { UserProfileFormValidator } from './user-profile-form/user-profile-form.
     HttpModule
   ],
   providers: [
+    ApiService,
     UserProfileFormValidator
   ],
   bootstrap: [AppComponent]

@@ -1,3 +1,4 @@
+
 <form class="ui form" novalidate [formGroup]="user" (ngSubmit)="submit()">
 
   <h4 class="ui dividing header">User profile:</h4>
@@ -9,6 +10,9 @@
            [ngClass]="{'error': (user.get('firstName').hasError('required') && user.get('firstName').touched) ||
                                        user.get('firstName').hasError('maxlength') && user.get('firstName').dirty}">
         <input type="text" name="firstName" formControlName="firstName" placeholder="First Name">
+        <div class="info" *ngIf="user.get('firstName').valid">
+          <pre>{{suggestedUsers$ | async}}</pre>
+        </div>
         <div class="error">
           <p *ngIf="user.get('firstName').hasError('required') && user.get('firstName').touched">First name is
             required</p>

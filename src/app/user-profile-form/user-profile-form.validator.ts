@@ -1,13 +1,14 @@
 import { AbstractControl, FormControl } from '@angular/forms';
-import { Http } from '@angular/http';
 import { Injectable } from '@angular/core';
 import 'rxjs/add/operator/delay';
+
+import { ApiService } from '../api.service';
 
 @Injectable()
 export class UserProfileFormValidator {
   public readonly emailPattern = '^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$';
 
-  constructor(private http: Http) {
+  constructor(private apiService: ApiService) {
   }
 
   public numberInRange(min: number, max: number): any {
@@ -19,23 +20,18 @@ export class UserProfileFormValidator {
   }
 
   public validateEmailNotTaken(control: AbstractControl) {
-    console.log('called');
     return this.checkEmail(control.value).map(res => {
       return res ? null : { emailTaken: true };
     });
   }
 
   private checkEmail(email: string) {
-    console.log('http call');
-    return this.http
-      .get('./assets/users.json')
+    return this.apiService
+      .getUsers()
       .debounceTime(500)
       .delay(1000)
-      .map(res => res.json())
       .map(users => {
         const user = users.find(item => item.email === email);
-
-        console.log(user);
 
         return !user;
       });
