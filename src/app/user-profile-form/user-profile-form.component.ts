@@ -1,14 +1,18 @@
-import { Component, OnInit, OnDestroy }        from '@angular/core';
-import { FormBuilder, FormGroup, Validators }  from '@angular/forms';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 // Operators
 import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/filter';
 import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/switchMap';
+import 'rxjs/add/observable/of';
 
-import { Gender, User } from './../models/user.model';
+import { Subscription } from 'rxjs/Subscription';
 
+import { Gender, User } from '../models/user.model';
 import { UserProfileFormValidator } from './user-profile-form.validator';
+import { Observable } from 'rxjs/Observable';
 
 /**
  Validators:
@@ -48,20 +52,18 @@ import { UserProfileFormValidator } from './user-profile-form.validator';
 
 
 @Component({
-  selector: 'user-profile-form',
+  selector: 'app-user-profile-form',
   templateUrl: './user-profile-form.component.html',
   styleUrls: ['./user-profile-form.component.less']
 })
 export class UserProfileFormComponent implements OnInit, OnDestroy {
-
-  private readonly currentDay = new Date().getDate();
-  private readonly currentMonth = new Date().getMonth() + 1;
-  private readonly currentYear = new Date().getFullYear();
-
-  private user: FormGroup;
+  public user: FormGroup;
+  public readonly currentDay = new Date().getDate();
+  public readonly currentMonth = new Date().getMonth() + 1;
+  public readonly currentYear = new Date().getFullYear();
+  private formSubscription: Subscription;
 
   constructor (private fb: FormBuilder) {
-
   }
 
   public ngOnInit(): void {
@@ -80,29 +82,30 @@ export class UserProfileFormComponent implements OnInit, OnDestroy {
     const toLowerCase = (char: string): string => char.toLowerCase();
     const isTextCharacter = (char: string): boolean => /^[a-zA-Z\s]+$/.test(char) && !!char;
     const toApiEndpoint = (char: string): string => `http://apiurl/${char}`;
-    const makeFakeHttpRequest = (url: string): string => JSON.stringify({data: `***Data from the faked server ${url}***`});
+    const makeFakeHttpRequest = (url: string): Observable<string> =>
+      Observable.of(JSON.stringify({status: 200, message: 'Success!', data: { user: true }}, null, 3));
 
-    //Simple example of how reactivity works
-    this.user.get('firstName').valueChanges
+    // Simple example of how reactivity works
+    this.formSubscription = this.user.get('firstName').valueChanges
       .debounceTime(500)
       .filter(isTextCharacter)
       .map(toLowerCase)
       .map(toApiEndpoint)
-      .map(makeFakeHttpRequest)
+      .switchMap(makeFakeHttpRequest)
       .subscribe(value => {
         console.log(`Retrieved from fake server : ${value}`);
       });
   }
 
   public ngOnDestroy(): void {
+    this.formSubscription.unsubscribe();
   }
 
-  private submit (): void {
-    if (!!this.user.valid) {
-
+  public submit (): void {
+    if (this.user.valid) {
       const userFormData: User = this.user.value;
 
-      console.log(userFormData, "Submitted!");
+      console.log(userFormData, 'Submitted!');
 
       this.user.reset();
     }
