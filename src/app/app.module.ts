@@ -1,11 +1,11 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
+import { HttpModule } from '@angular/http';
 
 import { AppComponent } from './app.component';
 import { UserProfileFormComponent } from './user-profile-form/user-profile-form.component';
-
-import { ReactiveFormsModule } from '@angular/forms';
-import { HttpModule } from '@angular/http';
+import { UserProfileFormValidator } from './user-profile-form/user-profile-form.validator';
 
 @NgModule({
   declarations: [
@@ -17,7 +17,9 @@ import { HttpModule } from '@angular/http';
     ReactiveFormsModule,
     HttpModule
   ],
-  providers: [],
+  providers: [
+    UserProfileFormValidator
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

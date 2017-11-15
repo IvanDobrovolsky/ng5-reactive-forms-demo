@@ -18,7 +18,7 @@
       </div>
 
       <div class="field"
-           [ngClass]="{'error': (user.get('lastName').hasError('required') && user.get('lastName').touched) ||
+           [ngClass]="{'error': (user.get('lastName').invalid && user.get('lastName').touched) ||
                                        user.get('lastName').hasError('maxlength') && user.get('lastName').dirty}">
         <input type="text" name="lastName" formControlName="lastName" placeholder="Last Name">
         <div class="error">
@@ -33,12 +33,14 @@
   <div class="field">
     <label>Email</label>
     <div class="two fields">
-      <div class="field" [ngClass]="{'error': user.get('email').hasError('required') && user.get('email').touched}">
+      <div class="field" [ngClass]="{'error': user.get('email').invalid && user.get('email').touched}">
         <input type="email" name="email" formControlName="email" placeholder="Enter your email">
         <div class="error">
           <p *ngIf="user.get('email').hasError('required') && user.get('email').touched">Email is required</p>
           <p *ngIf="user.get('email').hasError('pattern') && user.get('email').dirty">Should be a valid email
-            address </p>
+            address
+          </p>
+          <p *ngIf="user.get('email').hasError('emailTaken') && user.get('email').dirty">Email already exists</p>
         </div>
       </div>
     </div>

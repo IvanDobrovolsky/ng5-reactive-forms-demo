@@ -63,19 +63,24 @@ export class UserProfileFormComponent implements OnInit, OnDestroy {
   public readonly currentYear = new Date().getFullYear();
   private formSubscription: Subscription;
 
-  constructor (private fb: FormBuilder) {
+  constructor (private fb: FormBuilder, private customValidator: UserProfileFormValidator) {
   }
 
   public ngOnInit(): void {
     this.user = this.fb.group({
       firstName: ['', [Validators.required, Validators.maxLength(10)]],
       lastName: ['', [Validators.required, Validators.maxLength(10)]],
-      email: ['', [Validators.required, Validators.pattern(UserProfileFormValidator.emailPattern)]],
+      email: ['', [
+          Validators.required,
+          Validators.pattern(this.customValidator.emailPattern)
+        ],
+        this.customValidator.validateEmailNotTaken.bind(this.customValidator)
+      ],
       gender: [Gender[Gender.male], [Validators.required]],
       birthday: this.fb.group({
-        day: ['', [Validators.required, UserProfileFormValidator.numberInRange(1, 31)]],
-        month: ['', [Validators.required, UserProfileFormValidator.numberInRange(1, 12)]],
-        year: ['', [Validators.required, UserProfileFormValidator.numberInRange(1900, this.currentYear)]]
+        day: ['', [Validators.required, this.customValidator.numberInRange(1, 31)]],
+        month: ['', [Validators.required, this.customValidator.numberInRange(1, 12)]],
+        year: ['', [Validators.required, this.customValidator.numberInRange(1900, this.currentYear)]]
       })
     });
 
@@ -106,8 +111,6 @@ export class UserProfileFormComponent implements OnInit, OnDestroy {
       const userFormData: User = this.user.value;
 
       console.log(userFormData, 'Submitted!');
-
-      this.user.reset();
     }
   }
 }
